@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cek Weton Berdasarkan Tanggal Lahir</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url(https://static.promediateknologi.id/crop/0x0:0x0/0x0/webp/photo/p2/01/2024/06/21/white-bengal-tiger-nature_23-2151528361-3261950069.jpeg) no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .header {
+            background-color: #00A8E8;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            font-size: 24px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .submit-btn {
+            background-color: #00A8E8;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+        .submit-btn:hover {
+            background-color: #007B9E;
+        }
+        .loading {
+            display: none;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #007B9E;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #007B9E;
+            animation: spin 1s ease infinite;
+            margin: 0 auto 10px auto;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: none;
+        }
+        .result h2 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+        .result p span {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+        }
+        @media screen and (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 20px;
+                width: 100%;
+            }
+            .header, .submit-btn {
+                padding: 15px;
+                font-size: 16px;
+            }
+            .form-group input {
+                padding: 10px;
+            }
+            .result, .loading {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            Cek Weton Berdasarkan Tanggal Lahir
+        </div>
+        <form id="cekWetonForm">
+            <div class="form-group">
+                <label for="nama">Nama:</label>
+                <input type="text" id="nama" name="nama" required>
+            </div>
+            <div class="form-group">
+                <label for="tanggalLahir">Tanggal Lahir:</label>
+                <input type="date" id="tanggalLahir" name="tanggalLahir" required>
+            </div>
+            <button type="submit" class="submit-btn">Cek Weton</button>
+        </form>
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            Memeriksa weton Kamu...
+        </div>
+        <div id="result" class="result">
+            <h2>Hasil Weton Kamu:</h2>
+            <p id="wetonResult"></p>
+        </div>
+    </div>
+    <div class="footer">
+        &copy; 2024 Bendi.nr
+    </div>
+    <script>
+        const wetonList = ["Pahing", "Pon", "Wage", "Kliwon", "Legi"];
+        const hariList = [ "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu","Minggu",];
+
+        function getWeton(tanggalLahir) {
+            const baseDate = new Date('1900-01-01');
+            const targetDate = new Date(tanggalLahir);
+            const diffTime = Math.abs(targetDate - baseDate);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+            const dayIndex = diffDays % 7;
+            const pasaranIndex = diffDays % 5;
+
+            const hari = hariList[dayIndex];
+            const pasaran = wetonList[pasaranIndex];
+
+            return {
+                hari: hari,
+                pasaran: pasaran
+            };
+        }
+
+        document.getElementById('cekWetonForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+
+            setTimeout(function() {
+                const nama = document.getElementById('nama').value;
+                const tanggalLahir = document.getElementById('tanggalLahir').value;
+
+                const weton = getWeton(tanggalLahir);
+
+                document.getElementById('wetonResult').innerHTML = `${nama}, weton Kamu adalah <span>${weton.hari} ${weton.pasaran}</span>.`;
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('result').style.display = 'block';
+            }, 2000); // Simulate a 2 second loading time
+        });
+    </script>
+</body>
+</html>
